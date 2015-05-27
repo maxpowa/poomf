@@ -6,7 +6,7 @@ Takes screenshots and uploads them to a pomf-like service and copies the link to
 
 ## Instructions
 - Clone or download the repo
-- Make it executable using __chmod +x puush__
+- Make it executable using __chmod +x poomf__
 - Place this file wherever you want (recommended: /usr/local/bin)
 - Set up keyboard shortcuts within linux
   - (in Ubuntu it's system settings > keyboard > keyboard shortcuts > custom shortcuts)

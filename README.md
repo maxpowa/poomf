@@ -9,8 +9,9 @@ Takes screenshots and uploads them to a pomf-like service and copies the link to
 - Make it executable using __chmod +x poomf__
 - Place this file wherever you want (recommended: /usr/local/bin)
 - Set up keyboard shortcuts within linux
-  - (in Ubuntu it's system settings > keyboard > keyboard shortcuts > custom shortcuts)
-  - Log out for the changes to take place
+  - Ubuntu has them in System Settings > Keyboard > Keyboard Shortcuts > Custom Shortcuts
+![Ubuntu Settings](https://u.xpw.us/ivbodt.png)
+*You may need to log out for the changes to take place*
 
 ### Usage
 ```

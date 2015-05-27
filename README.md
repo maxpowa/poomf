@@ -1,4 +1,4 @@
-Pomf in Linux
+Pomf uploader for linux
 =====================
 
 Takes screenshots and uploads them to a pomf-like service and copies the link to clipboard. Recommended for set up with keyboard shortcuts
@@ -14,14 +14,15 @@ Takes screenshots and uploads them to a pomf-like service and copies the link to
 
 ### Usage
 ```
-_____________ poomf for linux _____________
+_________________ poomf _________________
 Usage:
   poomf [OPTIONS] [PATH]
 
 OPTIONS:
   -a                 poomf entire desktop
   -b                 poomf selected area
-  -c                 poomf current window
+  -w                 poomf current window
+  -c                 poomf clipboard content
   -d                 poomf specific file (opens file dialog)
 
   --help,-h          show this page

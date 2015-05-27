@@ -14,16 +14,16 @@ Takes screenshots and uploads them to a pomf-like service and copies the link to
 
 ### Usage
 ```
-_________________ poomf _________________
+_____________ poomf for linux _____________
 Usage:
   poomf [OPTIONS] [PATH]
 
 OPTIONS:
-  -a                 poomf entire desktop
-  -b                 poomf selected area
+  -d                 poomf entire desktop
+  -a                 poomf selected area
   -w                 poomf current window
   -c                 poomf clipboard content
-  -d                 poomf specific file (opens file dialog)
+  -f                 poomf specific file (opens file dialog)
 
   --help,-h          show this page
 

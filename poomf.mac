@@ -13,6 +13,7 @@ OUTPUT_URL='https://u.xpw.us'
 # Instructions:
 # - Install terminal-notifier with homebrew (brew install terminal-notifier)
 # - Place this file wherever you want (/usr/local/bin)
+# - Rename this file to 'poomf'
 # - Set up Automator configuration
 #
 # 		command			description		(recommended keyboard shortcut)
@@ -44,8 +45,8 @@ function poomfFile ()
 	n=0  # Multipe tries
 	while [[ $n -le 3 ]]; do
 		printf "try #${n}..."
-		if [[ "${my_output}" =~ '"success": ?true,' ]]; then
-			return_file=$(echo "$my_output" | grep -Eo '"url": ?".*",' | sed 's/"url": ?"//;s/",//')
+		if [[ "${my_output}" =~ '"success":true,' ]] || [[ "${my_output}" =~ '"success": true,' ]]; then
+			return_file=$(echo "$my_output" | grep -Eo '"url": ?"(.*)",' | sed -E 's/"url":[[:space:]]?"//;s/",//')
 			printf 'done.\n'
 			break
 		else

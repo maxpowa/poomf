@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEST_URL='https://u.xpw.us/upload.php' # could be http://pomf.se/upload.php
+DEST_URL='https://u.xpw.us/upload' # could be http://pomf.se/upload.php
 OUTPUT_URL='https://u.xpw.us' # could be http://a.pomf.se
 
 # Poomf for Ubuntu/linux
@@ -47,8 +47,8 @@ function poomfFile ()
 	n=0  # Multipe tries
 	while [[ $n -le 3 ]]; do
 		printf "try #${n}..."
-		if [[ "${my_output}" =~ '"success":true,' ]]; then
-			return_file=$(echo "$my_output" | grep -Eo '"url":".*",' | sed 's/"url":"//;s/",//')
+		if [[ "${my_output}" =~ '"success": ?true,' ]]; then
+			return_file=$(echo "$my_output" | grep -Eo '"url": ?".*",' | sed 's/"url": ?"//;s/",//')
 			printf 'done.\n'
 			break
 		else

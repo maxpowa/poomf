@@ -1,0 +1,148 @@
+#!/bin/bash
+
+DEST_URL='https://u.xpw.us/upload'
+OUTPUT_URL='https://u.xpw.us'
+
+# Poomf for Mac
+# Owner : Max Gurela
+# May 2015
+#
+# Dependencies:
+# - terminal-notifier
+#
+# Instructions:
+# - Install terminal-notifier with homebrew (brew install terminal-notifier)
+# - Place this file wherever you want (/usr/local/bin)
+# - Set up Automator configuration
+#
+# 		command			description		(recommended keyboard shortcut)
+#		---------------------------------------------------------------
+#		poomf -c		upload window		(Ctrl + Shift + 2/@)
+#		poomf -a		upload desktop	(Ctrl + Shift + 3/#)
+#		poomf -b		upload clipping	(Ctrl + Shift + 4/$)
+#		poomf -d		upload file			(Ctrl + Shift + U)
+#
+#
+# Notes:
+# - Link(s) will be copied into clipboard and appear in notifications
+# - curl upload code borrowed from online sources
+
+# Usage: poomfFile [fileName]
+function poomfFile ()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		exit 1
+	elif [ ! -f "$1" ]; then
+		echo "poomf cancelled"
+		exit 1
+	fi
+
+	file=$1
+	printf "Uploading ${file}..."
+	my_output=$(curl --silent -sf -F files[]="@${file}" "${DEST_URL}")
+	n=0  # Multipe tries
+	while [[ $n -le 3 ]]; do
+		printf "try #${n}..."
+		if [[ "${my_output}" =~ '"success": ?true,' ]]; then
+			return_file=$(echo "$my_output" | grep -Eo '"url": ?".*",' | sed 's/"url": ?"//;s/",//')
+			printf 'done.\n'
+			break
+		else
+			printf 'failed.\n'
+			((n = n +1))
+		fi
+	done
+	if [[ -n ${return_file} ]]; then
+		fileURL="${OUTPUT_URL}/${return_file}"
+		#Copy link to clipboard, show notification
+		printf $fileURL | pbcopy
+		terminal-notifier -appIcon "$( cd "$( dirname "$0" )" && pwd )/icon.png" -title "poomf complete!" -message "$fileURL"
+	else
+		terminal-notifier -appIcon "$( cd "$( dirname "$0" )" && pwd )/icon.png" -title "poomf failed!"
+	fi
+}
+
+function helpText ()
+{
+  printf "_____________ poomf for linux _____________\n"
+  printf "Usage:\n"
+  printf "  poomf [OPTIONS] [PATH]\n"
+  printf "\n"
+  printf "OPTIONS:\n"
+  printf "  -d                 poomf entire desktop\n"
+  printf "  -a                 poomf selected area\n"
+  printf "  -w                 poomf current window\n"
+  printf "  -c                 poomf clipboard content\n"
+  printf "  -f                 poomf specific file (opens file dialog)\n"
+  printf "\n"
+  printf "  --help,-h          show this page\n"
+  printf "\n"
+  printf "PATH:\n"
+  printf "  PATH               optional: path of file to poomf\n"
+}
+
+function generateFileName () { echo "/tmp/poomf-mac ($(date +"%Y-%m-%d at %I.%M.%S")).png"; }
+
+function generateTextName () { echo "/tmp/poomf-mac ($(date +"%Y-%m-%d at %I.%M.%S")).txt"; }
+
+
+if [ -z "$1" ]; then
+	echo "No file entered."
+	helpText
+  exit 1
+
+fi
+
+#Get file to poomf and poomf it
+case "$1" in
+	-d)
+		echo "Whole Desktop"
+			fileName=$(generateFileName)
+			screencapture "$fileName"
+			poomfFile "$fileName"
+		;;
+
+	-a)
+		echo "Area"
+			fileName=$(generateFileName)
+			screencapture -s "$fileName"
+			poomfFile "$fileName"
+		;;
+
+	-w)
+		echo "Window"
+			fileName=$(generateFileName)
+			screencapture -w "$fileName"
+			poomfFile "$fileName"
+		;;
+
+	-c)
+		echo "Clipboard upload"
+			content=`pbpaste`
+			if [ -f "$content" ]; then
+				poomfFile "$content"
+			else
+				fileName=$(generateTextName)
+				echo "$content" > "$fileName"
+				poomfFile "$fileName"
+			fi
+		;;
+
+	-f)
+		echo "File Upload"
+			fileName=`filedialog`
+			poomfFile "$fileName"
+		;;
+
+	-h|--help)
+		helpText
+		exit 0
+		;;
+
+	*)
+		echo "Upload $1"
+			poomfFile "$1"
+		;;
+
+esac

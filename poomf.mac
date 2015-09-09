@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEST_URL='https://u.xpw.us/upload'
+DEST_URL='https://u.xpw.us/upload.php'
 OUTPUT_URL='https://u.xpw.us'
 
 # Poomf for Mac

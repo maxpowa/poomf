@@ -3,6 +3,25 @@
 DEST_URL='https://u.xpw.us/upload.php' # could be http://pomf.se/upload.php
 OUTPUT_URL='https://u.xpw.us' # could be http://a.pomf.se
 
+trim() {
+    local orig="$1"
+    local trmd=""
+    while true;
+    do
+        trmd="${orig#[[:space:]]}"
+        trmd="${trmd%[[:space:]]}"
+        test "$trmd" = "$orig" && break
+        orig="$trmd"
+    done
+    printf -- '%s\n' "$trmd"
+}
+
+function jsonValue() {
+  KEY=$1
+  num=$2
+  awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
+}
+
 # Poomf for Ubuntu/linux
 # Owner : Max Gurela
 # May 2015
@@ -47,8 +66,10 @@ function poomfFile ()
 	n=0  # Multipe tries
 	while [[ $n -le 3 ]]; do
 		printf "try #${n}..."
-		if [[ "${my_output}" =~ '"success": ?true,' ]]; then
-			return_file=$(echo "$my_output" | grep -Eo '"url": ?".*",' | sed 's/"url": ?"//;s/",//')
+                status="$(echo "$my_output" | jsonValue success)"
+		if [[ $status =~ 'true' ]]; then
+			return_file="$(echo "$my_output" | jsonValue url)"
+                        return_file="$(trim "$return_file")"
 			printf 'done.\n'
 			break
 		else
@@ -58,11 +79,19 @@ function poomfFile ()
 	done
 	if [[ -n ${return_file} ]]; then
 		fileURL="${OUTPUT_URL}/${return_file}"
+                echo "Upload complete! $fileURL"
 		#Copy link to clipboard, show notification
-		printf $fileURL | xclip -selection "clipboard"
-		notify-send -i "$( cd "$( dirname "$0" )" && pwd )/icon.png" -t 2000 "poomf complete!" "$fileURL"
+		if hash xclip 2>/dev/null; then
+			printf $fileURL | xclip -selection "clipboard"
+		fi
+		if hash notify-send 2>/dev/null; then
+			notify-send -i "$( cd "$( dirname "$0" )" && pwd )/icon.png" -t 2000 "poomf complete!" "$fileURL"
+		fi
 	else
-		notify-send -i "$( cd "$( dirname "$0" )" && pwd )/icon.png" -t 2000 "poomf failed!"
+		echo "Upload failed."
+		if hash notify-send 2>/dev/null; then
+			notify-send -i "$( cd "$( dirname "$0" )" && pwd )/icon.png" -t 2000 "poomf failed!"
+		fi
 	fi
 }
 
@@ -149,3 +178,4 @@ case "$1" in
 		;;
 
 esac
+
